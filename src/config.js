@@ -7,7 +7,7 @@ export const PAYPAL_API = process.env.PAYPAL_API;
 export const FRONTEND_URL = process.env.FRONTEND_URL;
 
 export const PORT = process.env.PORT || 1028;
-export const HOST = "http://localhost:" + PORT;
+export const HOST = process.env.HOST;
 
 export const dbConfig = {
   user: process.env.DB_USER,
@@ -16,3 +16,5 @@ export const dbConfig = {
   database: process.env.DB_NAME,
   ssl: process.env.DB_SSL === 'true',
 };
+import { config } from "dotenv";
+config();

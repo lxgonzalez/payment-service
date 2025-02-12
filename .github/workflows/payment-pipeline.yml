@@ -48,5 +48,6 @@ jobs:
                        -e DB_HOST=${{secrets.DB_HOST}} \
                        -e DB_PORT=${{secrets.DB_PORT}} \
                        -e DB_NAME=${{secrets.DB_NAME}} \
+                       -e HOST=${{secrets.HOST}} \
                        -d --name ${{secrets.DOCKER_IMAGE_PAYMENT}} \
                        -p 1028:1028 ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMAGE_PAYMENT}}:latest
