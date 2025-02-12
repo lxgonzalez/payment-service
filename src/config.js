@@ -16,5 +16,4 @@ export const dbConfig = {
   database: process.env.DB_NAME,
   ssl: process.env.DB_SSL === 'true',
 };
-import { config } from "dotenv";
-config();
+
