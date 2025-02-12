@@ -1,14 +1,21 @@
 import { config } from "dotenv";
 config();
 
-// Paypal
 export const PAYPAL_API_CLIENT = process.env.PAYPAL_API_CLIENT;
 export const PAYPAL_API_SECRET = process.env.PAYPAL_API_SECRET;
-export const PAYPAL_API = process.env.PAYPAL_API; // url sandbox or live for your app
+export const PAYPAL_API = process.env.PAYPAL_API;
 export const FRONTEND_URL = process.env.FRONTEND_URL;
-// Server
+
 export const PORT = process.env.PORT || 3000;
 export const HOST =
   process.env.NODE_ENV === "production"
     ? process.env.HOST
     : "http://localhost:" + PORT;
+
+export const dbConfig = {
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  ssl: process.env.DB_SSL === 'true',
+};

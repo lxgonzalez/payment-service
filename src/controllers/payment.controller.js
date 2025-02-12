@@ -88,8 +88,6 @@ export const captureOrder = async (req, res) => {
       }
     );
 
-    // console.log(response.data);
-
     res.redirect(`${FRONTEND_URL}/payed`);
   } catch (error) {
     console.log(error.message);
