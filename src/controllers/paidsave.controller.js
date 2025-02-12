@@ -65,3 +65,40 @@ export const savePaid = async (req, res) => {
         client.release();
     }
 };
+
+export const getSales = async (req, res) => {
+    const client = await pool.connect();
+    try {
+      const query = `
+        SELECT 
+          sales.id AS sale_id,
+          sales.customer_id,
+          sales.total,
+          sales.currency,
+          sales.payment_method,
+          sales.sale_status,
+          sales.transaction_id,
+          sales.sale_date,
+          json_agg(
+            json_build_object(
+              'product_name', sale_items.product_name,
+              'product_price', sale_items.product_price,
+              'quantity', sale_items.quantity
+            )
+          ) AS sale_items
+        FROM sales
+        LEFT JOIN sale_items ON sales.id = sale_items.sale_id
+        GROUP BY sales.id
+      `;
+  
+      const result = await client.query(query);
+  
+      res.status(200).json(result.rows);
+    } catch (err) {
+      console.error("Error al obtener las ventas", err);
+      res.status(500).json({ message: "Error al obtener las ventas" });
+    } finally {
+      client.release();
+    }
+  };
+  
