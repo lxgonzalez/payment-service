@@ -1,0 +1,52 @@
+name: Pipeline for Payment Microservice
+
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+    branches: 
+      - test
+jobs:
+  build-and-push-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker image
+        run: docker buildx build -t ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_PAYMENT}}:latest .
+
+      - name: Push Docker image to Dockerhub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_PAYMENT}}:latest
+
+  deploy-to-ec2-instance:
+    needs: build-and-push-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST_TEST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            echo "Pull, stop, and redeploy the Docker container"
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_PAYMENT}}:latest
+            docker stop ${{secrets.DOCKER_IMAGE_PAYMENT}}|| true
+            docker rm ${{secrets.DOCKER_IMAGE_PAYMENT}} || true
+            docker run --restart always -e PAYPAL_API_CLIENT=${{secrets.PAYPAL_API_CLIENT}} \
+                       -e PAYPAL_API_SECRET=${{secrets.PAYPAL_API_SECRET}} \
+                       -e PAYPAL_API=${{secrets.PAYPAL_API}} \
+                       -e FRONTEND_URL=${{secrets.FRONTEND_URL}} \
+                       -e DB_USER=${{secrets.DB_USER}} \
+                       -e DB_HOST=${{secrets.DB_HOST}} \
+                       -e DB_PORT=${{secrets.DB_PORT}} \
+                       -e DB_NAME=${{secrets.DB_NAME}} \
+                       -d --name ${{secrets.DOCKER_IMAGE_PAYMENT}} \
+                       -p 1028:1028 ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMAGE_PAYMENT}}:latest

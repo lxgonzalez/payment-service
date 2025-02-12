@@ -6,11 +6,8 @@ export const PAYPAL_API_SECRET = process.env.PAYPAL_API_SECRET;
 export const PAYPAL_API = process.env.PAYPAL_API;
 export const FRONTEND_URL = process.env.FRONTEND_URL;
 
-export const PORT = process.env.PORT || 3000;
-export const HOST =
-  process.env.NODE_ENV === "production"
-    ? process.env.HOST
-    : "http://localhost:" + PORT;
+export const PORT = process.env.PORT || 1028;
+export const HOST = "http://localhost:" + PORT;
 
 export const dbConfig = {
   user: process.env.DB_USER,
